@@ -12,9 +12,12 @@ interface UsersResponse {
 }
 
 const UsersPage = async () => {
-  const res = await fetchClient(`${process.env.SERVER_URL}/api/v1/users`, {
-    headers: { "Content-Type": "application/json" },
-  });
+  const res = await fetchClient(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/user`,
+    {
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
   if (!res.ok) {
     if (res.status === 403) {
@@ -24,6 +27,7 @@ const UsersPage = async () => {
   }
 
   const users: UsersResponse = await res.json();
+  console.log(users);
 
   return (
     <div className="flex justify-center items-center flex-col">

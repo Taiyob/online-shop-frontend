@@ -1,11 +1,54 @@
 "use client";
 
 /* eslint-disable react/no-unescaped-entities */
-import React from "react";
+import React, { useState } from "react";
 import SocialLogin from "./SocialLogin";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
+      console.log(result);
+      if (result.status === 200) {
+        toast.success("Logged in Successful! 🎉");
+        setEmail("");
+        setPassword("");
+        router.push("/");
+      } else {
+        const data = await result.json();
+        if (data?.error?.code === "P2002") {
+          toast.error("Username Or Password is incorrect.");
+        } else {
+          toast.error("Something went wrong! Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Network error! Please check your internet connection.");
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden flex items-center justify-center bg-gradient-to-b from-[#f1f4f9] to-[#81a3bc] font-[Poppins]">
       {/* Blurred Colors */}
@@ -73,20 +116,34 @@ const LoginForm = () => {
               Login Form
               <span className="absolute left-0 -bottom-2 w-20 h-1 bg-white"></span>
             </h2>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mt-5">
                 <input
-                  type="text"
-                  placeholder="username"
+                  type="email"
+                  placeholder="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-5 py-2 bg-white/20 text-white placeholder-white text-base rounded-full border border-white/50 border-r-white/20 border-b-white/20 outline-none shadow-[0_5px_15px_rgba(0,0,0,0.05)]"
                 />
               </div>
               <div className="mt-5">
                 <input
-                  type="submit"
-                  value="Login"
-                  className="w-full max-w-[100px] px-5 py-2 bg-white text-gray-700 font-semibold rounded-full cursor-pointer"
+                  type="password"
+                  placeholder="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-5 py-2 bg-white/20 text-white placeholder-white text-base rounded-full border border-white/50 border-r-white/20 border-b-white/20 outline-none shadow-[0_5px_15px_rgba(0,0,0,0.05)]"
                 />
+              </div>
+              <div className="mt-5">
+                <button
+                  type="submit"
+                  className="flex items-center justify-center w-full gap-2 px-4 py-2 mt-5 backdrop-blur-md text-gray-700 bg-white border border-white/50 border-r-white/20 border-b-white/20 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.05)] hover:bg-white/70 transition cursor-pointer font-semibold text-base"
+                >
+                  Login
+                </button>
               </div>
               <p className="text-white text-sm mt-2">
                 Forget Password?{" "}
