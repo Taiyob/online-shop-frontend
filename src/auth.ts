@@ -33,29 +33,34 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
         method: "POST",
         credentials: "include",
         headers: {
+          "Content-Type": "application/json",
           Cookie: `refreshToken=${token.refreshToken}`,
         },
       }
-      // {
-      //   headers: {
-      //     Authorization: `${token.refreshToken}`,
-      //   },
-      // }
     );
 
-    const newTokens = await res.json();
-    console.log("New tokens: ", newTokens);
+    // console.log("Request to refresh token:", res);
+    // console.log("Response Status:", res.status);
+
+    const responseText = await res.clone().text();
+    console.log("Response Body:", responseText);
 
     if (!res.ok) {
+      throw new Error("Failed to refresh token");
     }
 
+    const data = await res.json();
+    // console.log("New tokens: ", data);
+
+    const decodeToken = jwtDecode<DecodedToken>(data.data.accessToken);
     return {
       ...token,
-      accessToken: newTokens.data.accessToken,
-      refereshTokn: newTokens.data.refreshToken ?? token.refereshToken,
+      accessToken: data.data.accessToken,
+      refreshToken: data.data.refreshToken ?? token.refreshToken,
+      accessTokenExpires: decodeToken.exp * 1000,
     };
   } catch (error) {
-    console.log(error);
+    console.error("Error refreshing token: ", error);
     return {
       ...token,
       error: "Refresh access token error",
@@ -104,11 +109,12 @@ export const {
 
         try {
           const res = await fetch(
-            `${process.env.SERVER_URL}/api/v1/auth/signin`,
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/login-super-admin`,
             {
               method: "POST",
               body: JSON.stringify({ email: inputEmail, password }),
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
             }
           );
 
@@ -117,14 +123,11 @@ export const {
           }
 
           const parsedResponse: AuthResponse = await res.json();
-          // console.log("From auth", parsedResponse);
 
           const { user, accessToken, refreshToken } = parsedResponse.data;
-          // console.log("From auth", user);
           const { email, role } = user;
 
           return {
-            //...user,
             email,
             role,
             accessToken,
@@ -147,18 +150,46 @@ export const {
       user?: User;
       account?: Account | null;
     }): Promise<JWT> => {
-      // console.log(`In JWT callback, token is: ${JSON.stringify(token)}`);
-
       if (token?.accessToken) {
         const decodeToken = jwtDecode<DecodedToken>(token.accessToken!);
-        // console.log("Decode token: ", decodeToken);
 
         token.accessTokenExpires = decodeToken.exp * 1000;
       }
 
       if (account && user) {
-        // console.log(`In JWT callback, user is: ${JSON.stringify(user)}`);
-        // console.log(`In JWT callback, account is: ${JSON.stringify(account)}`);
+        if (account.provider === "google" || account.provider === "github") {
+          try {
+            const res = await fetch(
+              `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/social-login`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: user.email,
+                  name: user.name,
+                  provider: account.provider,
+                }),
+              }
+            );
+
+            const result = await res.json();
+            const { accessToken, refreshToken, user: socialUser } = result.data;
+
+            return {
+              ...token,
+              accessToken,
+              refreshToken,
+              user: {
+                email: socialUser.email,
+                role: socialUser.role,
+              },
+            };
+          } catch (error) {
+            console.error("Social login to backend failed", error);
+          }
+        }
 
         const email = user.email ?? "";
         const role = user.role ?? "";
@@ -185,11 +216,10 @@ export const {
       session: Session;
       token: JWT;
     }): Promise<Session> => {
-      // console.log(`In SESSION callback, token is: ${JSON.stringify(token)}`);
-
       if (token) {
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken;
+        session.user = token.user;
       }
 
       return session;

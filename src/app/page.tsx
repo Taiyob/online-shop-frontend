@@ -54,7 +54,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="text-center text-sm text-white/80 py-10 mt-20 relative z-10">
-        &copy; {new Date().getFullYear()} QuickAccess. All rights reserved.
+        {/* &copy; {new Date().getFullYear()} QuickAccess. All rights reserved. */}
       </footer>
     </div>
   );

@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 interface User {
-  _id: string;
-  name: string;
+  id: string;
+  user_name: string;
 }
 
 interface UsersResponse {
@@ -12,29 +12,35 @@ interface UsersResponse {
 }
 
 const UsersPage = async () => {
-  const res = await fetchClient(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/user`,
-    {
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  let users: UsersResponse | null = null;
+  try {
+    const res = await fetchClient(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/user`,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
-  if (!res.ok) {
-    if (res.status === 403) {
-      console.log("token expired");
-      redirect("/");
+    if (!res.ok) {
+      if (res.status === 403) {
+        console.log("token expired");
+        redirect("/");
+      }
+      throw new Error("Failed to fetch users");
     }
+
+    users = await res.json();
+  } catch (error) {
+    console.error(error);
+    redirect("/");
   }
-
-  const users: UsersResponse = await res.json();
-  console.log(users);
 
   return (
     <div className="flex justify-center items-center flex-col">
       {users?.data.map((user) => (
-        <ul key={user._id}>
+        <ul key={user.id}>
           <li>
-            <h1>{user.name}</h1>
+            <h1>{user.user_name}</h1>
           </li>
         </ul>
       ))}

@@ -6,48 +6,82 @@ import SocialLogin from "./SocialLogin";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { doCredentialLogin } from "@/app/actions";
 
 const LoginForm = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [err, setErr] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  async function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
 
     try {
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
-      console.log(result);
-      if (result.status === 200) {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      console.log("Formdata:", Object.fromEntries(formData.entries()));
+
+      const response = await doCredentialLogin(formData);
+      console.log("Response:", response);
+
+      if (response?.ok) {
+        router.refresh();
+        router.push("/home");
         toast.success("Logged in Successful! 🎉");
-        setEmail("");
-        setPassword("");
-        router.push("/");
       } else {
-        const data = await result.json();
-        if (data?.error?.code === "P2002") {
-          toast.error("Username Or Password is incorrect.");
-        } else {
-          toast.error("Something went wrong! Please try again.");
-        }
+        console.log("Login failed:", response);
+        setErr("Invalid email or password");
+        toast.error(`Error: ${response}`);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Network error! Please check your internet connection.");
+      console.log(error);
+      toast.error(
+        `Network error! Please check your internet connection... ${error}`
+      );
+      throw new Error("Data not found");
     }
-  };
+  }
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const result = await fetch(
+  //       `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/login-super-admin`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           email,
+  //           password,
+  //         }),
+  //         credentials: "include",
+  //       }
+  //     );
+  //     const user = await result.json();
+  //     console.log(user);
+  //     if (result.status === 200) {
+  //       toast.success("Logged in Successful! 🎉");
+  //       setEmail("");
+  //       setPassword("");
+  //       router.push("/");
+  //     } else {
+  //       const data = await result.json();
+  //       if (data?.error?.code === "P2002") {
+  //         toast.error("Username Or Password is incorrect.");
+  //       } else {
+  //         toast.error("Something went wrong! Please try again.");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Network error! Please check your internet connection.");
+  //   }
+  // };
 
   return (
     <div className="relative min-h-screen overflow-hidden flex items-center justify-center bg-gradient-to-b from-[#f1f4f9] to-[#81a3bc] font-[Poppins]">
@@ -116,7 +150,7 @@ const LoginForm = () => {
               Login Form
               <span className="absolute left-0 -bottom-2 w-20 h-1 bg-white"></span>
             </h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={onSubmit}>
               <div className="mt-5">
                 <input
                   type="email"
@@ -137,6 +171,7 @@ const LoginForm = () => {
                   className="w-full px-5 py-2 bg-white/20 text-white placeholder-white text-base rounded-full border border-white/50 border-r-white/20 border-b-white/20 outline-none shadow-[0_5px_15px_rgba(0,0,0,0.05)]"
                 />
               </div>
+              {err && <p className="text-red-500">{err}</p>}
               <div className="mt-5">
                 <button
                   type="submit"
