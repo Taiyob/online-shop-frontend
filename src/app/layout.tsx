@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 //import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
 import { ReduxProviders } from "@/components/shared/ReduxProviders";
+import ToasterProvider from "@/components/shared/ToasterProvider";
+import ClientDebugger from "@/components/ClientDebugger";
+import DebugComponent from "@/components/DebugComponent";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -26,11 +28,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <ReduxProviders>
-          {children}
-          <Toaster />
-        </ReduxProviders>
+      <body data-app="online-shop">
+        <DebugComponent name="RootLayout" />
+        <div id="app-root">
+          <ReduxProviders>
+            {children}
+            <ToasterProvider />
+            <ClientDebugger />
+          </ReduxProviders>
+        </div>
       </body>
     </html>
   );

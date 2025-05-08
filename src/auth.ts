@@ -220,6 +220,10 @@ export const {
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken;
         session.user = token.user;
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("accessToken", session.accessToken as string);
+        }
       }
 
       return session;

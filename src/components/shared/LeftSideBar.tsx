@@ -2,16 +2,49 @@
 
 import React, { useState } from "react";
 import {
-  UploadOutlined,
+  HomeOutlined,
+  OrderedListOutlined,
+  ProductOutlined,
   UserOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { Button, Layout, Menu } from "antd";
+import { usePathname, useRouter } from "next/navigation";
+import LogoutForm from "../LogoutForm";
+import Link from "next/link";
 
 const { Sider } = Layout;
 
 const LeftSideBar = () => {
+  const router = useRouter();
   const [collapsed] = useState(false);
+  const pathname = usePathname();
+
+  const getKeyFromPath = (path: string) => {
+    if (path.includes("/dashboard/all-users")) return "1";
+    if (path.includes("/dashboard/products")) return "2";
+    if (path.includes("/dashboard/orders")) return "3";
+    return "";
+  };
+
+  const selectedKey = getKeyFromPath(pathname);
+
+  const menuItems = [
+    {
+      key: "1",
+      icon: <UserOutlined />,
+      label: <Link href={`/dashboard/all-users`}>All Users List</Link>,
+    },
+    {
+      key: "2",
+      icon: <ProductOutlined />,
+      label: <Link href={`/dashboard`}>All Products List</Link>,
+    },
+    {
+      key: "3",
+      icon: <OrderedListOutlined />,
+      label: <Link href={`/dashboard`}>All Orders</Link>,
+    },
+  ];
 
   return (
     <Layout>
@@ -22,36 +55,55 @@ const LeftSideBar = () => {
         collapsible
         collapsed={collapsed}
         style={{
-          height: "100vh", // 👈 full screen height
-          position: "fixed", // optional: make it stay on scroll
-          left: 0, // necessary with fixed positioning
+          height: "100vh",
+          position: "fixed",
+          left: 0,
           top: 0,
           bottom: 0,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
-        <div className="demo-logo-vertical" />
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["1"]}
-          items={[
-            {
-              key: "1",
-              icon: <UserOutlined />,
-              label: "nav 1",
-            },
-            {
-              key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "nav 2",
-            },
-            {
-              key: "3",
-              icon: <UploadOutlined />,
-              label: "nav 3",
-            },
-          ]}
-        />
+        <div className="flex flex-col h-full justify-between">
+          {/* Top content */}
+          <div>
+            <div className="demo-logo-vertical" />
+            <h1 className="text-white px-5 py-5">
+              <Link href={`/dashboard`}>Admin Dashboard</Link> :{" "}
+              <span className="text-pink-400">Jannatul Ferdous</span>
+            </h1>
+            <Menu
+              theme="dark"
+              mode="inline"
+              //defaultSelectedKeys={["1"]}
+              selectedKeys={[selectedKey]}
+              items={menuItems}
+            />
+          </div>
+
+          {/* Bottom content */}
+          <div
+            style={{
+              position: "fixed",
+              bottom: "20px",
+              left: "20px",
+              zIndex: 999,
+              display: "flex",
+              gap: "20px",
+              justifyContent: "center",
+              justifyItems: "center",
+            }}
+          >
+            <LogoutForm />
+            <Button
+              onClick={() => router.push("/")}
+              type="primary"
+              shape="circle"
+              icon={<HomeOutlined />}
+            />
+          </div>
+        </div>
       </Sider>
     </Layout>
   );
