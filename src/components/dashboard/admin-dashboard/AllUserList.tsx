@@ -15,6 +15,18 @@ interface DataType {
   tags: string[];
 }
 
+type TUser = {
+  id: string;
+  user_name: string;
+  profile?: {
+    fullName?: string;
+  };
+  email: string;
+  role: string;
+  status: string;
+  tags: string[];
+};
+
 const columns: TableProps<DataType>["columns"] = [
   {
     title: "Name",
@@ -69,7 +81,7 @@ const AllUserList = () => {
   if (isError) return <p>Failed to load users.</p>;
   console.log(allUsers);
 
-  const transformedData: DataType[] = allUsers.data.map((user: any) => ({
+  const transformedData: DataType[] = allUsers.data.map((user: TUser) => ({
     key: user.id,
     name: user.user_name || user.profile?.fullName || "N/A",
     email: user.email,

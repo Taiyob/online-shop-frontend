@@ -1,5 +1,17 @@
 import { baseApi } from "../baseApi";
 
+type TUser = {
+  id: string;
+  user_name: string;
+  profile?: {
+    fullName?: string;
+  };
+  email: string;
+  role: string;
+  status: string;
+  tags: string[];
+};
+
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllUsers: builder.query({
@@ -10,7 +22,7 @@ const userApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result?.data
           ? [
-              ...result.data.map((user: any) => ({
+              ...result.data.map((user: TUser) => ({
                 type: "User",
                 id: user.id,
               })),

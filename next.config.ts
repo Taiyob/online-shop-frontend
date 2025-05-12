@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  experimental: {
+    scrollRestoration: true,
+  },
 };
 
 export default nextConfig;

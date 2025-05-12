@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, message, Select, Space, Typography } from "antd";
+import { Form, message, Select, Space } from "antd";
 import type { SelectProps } from "antd";
 import {
   useUpdateUserRoleMutation,
@@ -8,7 +8,7 @@ import {
 } from "@/redux/api/user/userApi";
 import { toast } from "sonner";
 
-const { Text } = Typography;
+//const { Text } = Typography;
 
 const roleOptions: SelectProps["options"] = [
   { label: "SUPER_ADMIN", value: "SUPER_ADMIN" },
@@ -23,7 +23,13 @@ const statusOptions: SelectProps["options"] = [
   { label: "DELETED", value: "DELETED" },
 ];
 
-const ActionCell = ({ record }: { record: any }) => {
+type TRole = {
+  key: string;
+  role: string;
+  status: string;
+};
+
+const ActionCell = ({ record }: { record: TRole }) => {
   const [updateUserRole] = useUpdateUserRoleMutation();
   const [updateUserStatus] = useUpdateUserStatusMutation();
 
@@ -33,7 +39,7 @@ const ActionCell = ({ record }: { record: any }) => {
       message.success("Role updated successfully");
       toast.success("Role is updated...");
     } catch (err) {
-      message.error("Failed to update role");
+      message.error(`Failed to update role: ${err}`);
       toast.error("Failed to updated...");
     }
   };
@@ -44,7 +50,7 @@ const ActionCell = ({ record }: { record: any }) => {
       message.success("Status updated successfully");
       toast.success("Status is updated...");
     } catch (err) {
-      message.error("Failed to update status");
+      message.error(`Failed to update status: ${err}`);
       toast.error("Failed to updated...");
     }
   };
