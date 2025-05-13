@@ -28,7 +28,7 @@ const LoginForm = () => {
 
       if (response?.ok) {
         router.refresh();
-        router.push("/home");
+        router.push("/");
         toast.success("Logged in Successful! 🎉");
       } else {
         console.log("Login failed:", response);

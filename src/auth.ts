@@ -39,8 +39,8 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       }
     );
 
-    // console.log("Request to refresh token:", res);
-    // console.log("Response Status:", res.status);
+    console.log("Request to refresh token:", res);
+    console.log("Response Status:", res.status);
 
     const responseText = await res.clone().text();
     console.log("Response Body:", responseText);
@@ -119,7 +119,9 @@ export const {
           );
 
           if (!res.ok) {
-            return null;
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Login failed");
+            //return null;
           }
 
           const parsedResponse: AuthResponse = await res.json();
@@ -221,9 +223,9 @@ export const {
         session.refreshToken = token.refreshToken;
         session.user = token.user;
 
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", session.accessToken as string);
-        }
+        // if (typeof window !== "undefined") {
+        //   localStorage.setItem("accessToken", session.accessToken as string);
+        // }
       }
 
       return session;
