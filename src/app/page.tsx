@@ -1,9 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
+import Navbar from "@/components/Navbar";
+import NavbarComponent from "@/components/NavbarComponent";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f1f4f9] to-[#81a3bc] text-white font-[Poppins] relative overflow-hidden">
+    <div className="bg-white">
+      <Navbar></Navbar>
+      <NavbarComponent></NavbarComponent>
+      <div className="min-h-screen bg-gradient-to-b from-[#f1f4f9] to-[#81a3bc] text-white font-[Poppins] relative overflow-hidden">
+      
       {/* Blurred Colors */}
       <div className="absolute top-[-350px] w-[600px] h-[600px] bg-[#ff6b35] blur-[150px]" />
       <div className="absolute bottom-[-150px] left-[100px] w-[500px] h-[500px] bg-[#a4a255] blur-[150px]" />
@@ -56,6 +62,7 @@ export default function Home() {
       <footer className="text-center text-sm text-white/80 py-10 mt-20 relative z-10">
         {/* &copy; {new Date().getFullYear()} QuickAccess. All rights reserved. */}
       </footer>
+    </div>
     </div>
   );
 }
