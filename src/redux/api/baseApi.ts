@@ -4,7 +4,7 @@ import { getSession } from "next-auth/react";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api/v1",
+    baseUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1`,
     credentials: "include",
     prepareHeaders: async (headers) => {
       const session = await getSession();
@@ -13,7 +13,7 @@ export const baseApi = createApi({
       if (token) {
         headers.set("Authorization", `${token}`);
       }
-
+      //NEXT_PUBLIC_SERVER_URL
       return headers;
     },
   }),
