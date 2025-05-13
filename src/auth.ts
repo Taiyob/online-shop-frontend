@@ -39,8 +39,8 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       }
     );
 
-    console.log("Request to refresh token:", res);
-    console.log("Response Status:", res.status);
+    // console.log("Request to refresh token:", res);
+    // console.log("Response Status:", res.status);
 
     const responseText = await res.clone().text();
     console.log("Response Body:", responseText);
