@@ -1,13 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 import Navbar from "@/components/Navbar";
-import NavbarComponent from "@/components/NavbarComponent";
+// import NavbarComponent from "@/components/NavbarComponent";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="bg-white">
       <Navbar></Navbar>
-      <NavbarComponent></NavbarComponent>
+      {/* <NavbarComponent></NavbarComponent> */}
       <div className="min-h-screen bg-gradient-to-b from-[#f1f4f9] to-[#81a3bc] text-white font-[Poppins] relative overflow-hidden">
       
       {/* Blurred Colors */}

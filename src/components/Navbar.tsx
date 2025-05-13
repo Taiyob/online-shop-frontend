@@ -1,9 +1,10 @@
 "use client";
 
-import { Link } from "@nextui-org/react";
-import { Input } from "antd";
+import { Input, Link } from "@nextui-org/react";
+// import { Input } from "antd";
 import React, { useState } from "react";
-import { IoSearch } from "react-icons/io5";
+// import { IoSearch } from "react-icons/io5";
+import { SlidingMenu } from "./navbar/SlidingMenu";
 
 const Navbar = () => {
   const [query, setQuery] = useState("");
@@ -26,7 +27,7 @@ const Navbar = () => {
         </div>
 
         {/* Center: Main Menu (desktop only) */}
-        <div className="hidden md:flex flex-1 justify-center">
+        {/* <div className="hidden md:flex flex-1 justify-center">
           <ul className="flex items-center text-black gap-8 text-base font-medium">
             <li>
               <Link href="/" className="hover:text-orange-600">
@@ -44,7 +45,9 @@ const Navbar = () => {
               </Link>
             </li>
           </ul>
-        </div>
+        </div> */}
+        <SlidingMenu></SlidingMenu>
+        {/* <LanguageButton></LanguageButton> */}
 
         {/* Right: Search bar */}
         <div>
@@ -53,7 +56,7 @@ const Navbar = () => {
             value={query}
             onChange={handleSearch}
             placeholder="Search..."
-            prefix={<IoSearch />}
+            // prefix={<IoSearch />}
             style={{ height: "2.5rem", width: "200px" }}
           />
           
