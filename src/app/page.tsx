@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import Navbar from "@/components/Navbar";
 // import NavbarComponent from "@/components/NavbarComponent";
+import Navbar from "@/components/shared/Navbar";
 import Link from "next/link";
 
 export default function Home() {
